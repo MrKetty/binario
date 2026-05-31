@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phone Binary</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: linear-gradient(135deg, #f0f4ff 0%, #fdf2f8 100%);
+  font-family: 'IBM Plex Mono', monospace;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+.scene {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+}
+.phone-col {
+  flex-shrink: 0;
+  width: 230px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  position: relative;
+  z-index: 2;
+}
+.phone-col svg { width: 180px; filter: drop-shadow(0 12px 32px rgba(99,102,241,0.22)); }
+.phone-col.right svg { filter: drop-shadow(0 12px 32px rgba(236,72,153,0.22)); }
+.input-box, .recv-box { width: 100%; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 20px rgba(99,102,241,0.13); }
+.recv-box { box-shadow: 0 4px 20px rgba(236,72,153,0.13); }
+.input-box { border: 2px solid #818cf8; background: #fff; }
+.recv-box  { border: 2px solid #f472b6; background: #fff; }
+.box-label { font-size: 0.58rem; letter-spacing: 0.24em; text-transform: uppercase; padding: 0.5rem 1rem; font-weight: 700; }
+.la { color: #6366f1; border-bottom: 1.5px solid #e0e7ff; background: #eef2ff; }
+.lb { color: #ec4899; border-bottom: 1.5px solid #fce7f3; background: #fdf2f8; }
+.input-row { display: flex; align-items: stretch; }
+.input-row input {
+  flex: 1; background: transparent; border: none; outline: none;
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.88rem;
+  color: #3730a3; padding: 0.7rem 1rem; caret-color: #6366f1; min-width: 0;
+}
+.input-row input::placeholder { color: #c7d2fe; }
+.send-btn {
+  background: #6366f1; border: none;
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem;
+  letter-spacing: 0.12em; text-transform: uppercase; padding: 0 1.1rem;
+  cursor: pointer; color: #fff; font-weight: 700;
+  transition: background 0.15s, transform 0.1s;
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+}
+.send-btn:hover { background: #4f46e5; }
+.send-btn:active { transform: scale(0.96); }
+.recv-body { min-height: 44px; padding: 0.75rem 1rem; font-size: 1rem; color: #be185d; word-break: break-word; line-height: 1.5; font-weight: 700; }
+.wave-col {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  gap: 10px; padding: 0; margin: 0 -10px; position: relative; z-index: 1;
+}
+.bits-line {
+  width: 100%; padding: 0 10px; font-size: 1.15rem; font-weight: 700;
+  letter-spacing: 0.22em; line-height: 1.8; min-height: 3.8em; word-break: break-all;
+}
+.b0 { color: #f59e0b; }
+.b1 { color: #f97316; }
+canvas { width: 100%; height: 150px; display: block; border-radius: 16px; background: #fff; box-shadow: 0 4px 28px rgba(99,102,241,0.12); }
+.wave-status { font-size: 0.55rem; letter-spacing: 0.22em; text-transform: uppercase; color: #a5b4fc; min-height: 1.2em; text-align: center; font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="scene">
+
+  <!-- TELEFONO A -->
+  <div class="phone-col left">
+    <svg viewBox="0 0 130 260" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="bgA" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#e0e7ff"/>
+          <stop offset="100%" stop-color="#ede9fe"/>
+        </linearGradient>
+      </defs>
+      <rect x="4" y="2" width="122" height="256" rx="24" fill="url(#bgA)" stroke="#6366f1" stroke-width="2.2"/>
+      <rect x="9" y="7" width="112" height="246" rx="20" fill="#f5f3ff"/>
+      <rect x="18" y="16" width="94" height="38" rx="13" fill="#ede9fe" stroke="#c4b5fd" stroke-width="1"/>
+      <circle cx="41" cy="35" r="12" fill="#ddd6fe" stroke="#a78bfa" stroke-width="1"/>
+      <circle cx="41" cy="35" r="7.5" fill="#c4b5fd"/>
+      <circle cx="41" cy="35" r="4" fill="#7c3aed"/>
+      <circle cx="38.5" cy="32.5" r="1.6" fill="#fff" opacity="0.75"/>
+      <circle cx="66" cy="35" r="12" fill="#ddd6fe" stroke="#a78bfa" stroke-width="1"/>
+      <circle cx="66" cy="35" r="7.5" fill="#c4b5fd"/>
+      <circle cx="66" cy="35" r="4" fill="#7c3aed"/>
+      <circle cx="63.5" cy="32.5" r="1.6" fill="#fff" opacity="0.75"/>
+      <circle cx="88" cy="35" r="7" fill="#fef3c7" stroke="#fcd34d" stroke-width="1"/>
+      <circle cx="88" cy="35" r="4.5" fill="#fde68a"/>
+      <line x1="18" y1="54" x2="112" y2="54" stroke="#c4b5fd" stroke-width="1"/>
+      <rect x="127" y="80" width="3.5" height="36" rx="1.8" fill="#a78bfa"/>
+      <rect x="-0.5" y="74" width="3.5" height="24" rx="1.8" fill="#a78bfa"/>
+      <rect x="-0.5" y="102" width="3.5" height="24" rx="1.8" fill="#a78bfa"/>
+    </svg>
+    <div class="input-box">
+      <div class="box-label la">Telefono A</div>
+      <div class="input-row">
+        <input id="msg" type="text" placeholder="messaggio..." maxlength="48"/>
+        <button class="send-btn" onclick="send()">invia</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- WAVE -->
+  <div class="wave-col">
+    <div class="bits-line" id="bits"></div>
+    <canvas id="c" width="600" height="150"></canvas>
+    <div class="wave-status" id="wst"></div>
+  </div>
+
+  <!-- TELEFONO B -->
+  <div class="phone-col right">
+    <svg viewBox="0 0 130 260" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="bgB" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#fce7f3"/>
+          <stop offset="100%" stop-color="#fdf4ff"/>
+        </linearGradient>
+      </defs>
+      <rect x="4" y="2" width="122" height="256" rx="24" fill="url(#bgB)" stroke="#ec4899" stroke-width="2.2"/>
+      <rect x="9" y="7" width="112" height="246" rx="20" fill="#fdf4ff"/>
+      <rect x="18" y="16" width="94" height="38" rx="13" fill="#fae8ff" stroke="#f0abfc" stroke-width="1"/>
+      <circle cx="41" cy="35" r="12" fill="#f5d0fe" stroke="#e879f9" stroke-width="1"/>
+      <circle cx="41" cy="35" r="7.5" fill="#f0abfc"/>
+      <circle cx="41" cy="35" r="4" fill="#a21caf"/>
+      <circle cx="38.5" cy="32.5" r="1.6" fill="#fff" opacity="0.75"/>
+      <circle cx="66" cy="35" r="12" fill="#f5d0fe" stroke="#e879f9" stroke-width="1"/>
+      <circle cx="66" cy="35" r="7.5" fill="#f0abfc"/>
+      <circle cx="66" cy="35" r="4" fill="#a21caf"/>
+      <circle cx="63.5" cy="32.5" r="1.6" fill="#fff" opacity="0.75"/>
+      <circle cx="88" cy="35" r="7" fill="#fef3c7" stroke="#fcd34d" stroke-width="1"/>
+      <circle cx="88" cy="35" r="4.5" fill="#fde68a"/>
+      <line x1="18" y1="54" x2="112" y2="54" stroke="#f0abfc" stroke-width="1"/>
+      <rect x="127" y="80" width="3.5" height="36" rx="1.8" fill="#f472b6"/>
+      <rect x="-0.5" y="74" width="3.5" height="24" rx="1.8" fill="#f472b6"/>
+      <rect x="-0.5" y="102" width="3.5" height="24" rx="1.8" fill="#f472b6"/>
+    </svg>
+    <div class="recv-box">
+      <div class="box-label lb">Telefono B</div>
+      <div class="recv-body" id="recv"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx    = canvas.getContext('2d');
+const bitsEl = document.getElementById('bits');
+const recvEl = document.getElementById('recv');
+const wst    = document.getElementById('wst');
+
+let W = canvas.width;
+const H = canvas.height;
+const MID = H / 2;
+
+let ph = 0, waveOn = false, sending = false;
+let sendProgress = 0, totalFrames = 0, frameCount = 0;
+let lastBits = '', currentText = '', bits = '';
+let revealedCount = 0, revealedStr = '', pendingReveal = false;
+
+function resizeCanvas() {
+  const rect = canvas.getBoundingClientRect();
+  const dpr  = window.devicePixelRatio || 1;
+  canvas.width  = rect.width * dpr;
+  canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+  W = rect.width;
+}
+window.addEventListener('resize', resizeCanvas);
+setTimeout(resizeCanvas, 100);
+
+function toBits(text) {
+  return [...text].map(c => c.codePointAt(0).toString(2).padStart(8,'0')).join('');
+}
+
+function renderBits(str) {
+  bitsEl.innerHTML = str.split('').map(ch => {
+    if (ch === '0') return '<span class="b0">0</span>';
+    if (ch === '1') return '<span class="b1">1</span>';
+    return ' ';
+  }).join('');
+}
+
+function drawSine(amp, freq, color, lineW, clipX) {
+  ctx.save();
+  if (clipX != null) { ctx.beginPath(); ctx.rect(0, 0, clipX, H); ctx.clip(); }
+  ctx.beginPath();
+  for (let px = 0; px <= W; px++) {
+    const y = MID + Math.sin((px / W) * Math.PI * 2 * freq - ph) * amp;
+    px === 0 ? ctx.moveTo(px, y) : ctx.lineTo(px, y);
+  }
+  ctx.strokeStyle = color; ctx.lineWidth = lineW; ctx.stroke();
+  ctx.restore();
+}
+
+function loop() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
+  ctx.beginPath(); ctx.moveTo(0, MID); ctx.lineTo(W, MID);
+  ctx.strokeStyle = '#e0e7ff'; ctx.lineWidth = 1.5; ctx.stroke();
+
+  if (waveOn) {
+    const EXTEND = 30;
+    if (sending) {
+      const headX = -EXTEND + sendProgress * (W + EXTEND * 2);
+      const clipX = Math.max(0, Math.min(W, headX));
+      if (clipX > 0) {
+        drawSine(36, 3,   'rgba(99,102,241,0.9)',  3.2, clipX);
+        drawSine(20, 5.5, 'rgba(236,72,153,0.6)',  2.2, clipX);
+        drawSine(14, 1.4, 'rgba(245,158,11,0.4)',  1.8, clipX);
+      }
+      if (headX > 0 && headX < W) {
+        const hy = MID + Math.sin((headX / W) * Math.PI * 2 * 3 - ph) * 36;
+        const grd = ctx.createRadialGradient(headX, hy, 0, headX, hy, 32);
+        grd.addColorStop(0,    'rgba(99,102,241,1)');
+        grd.addColorStop(0.35, 'rgba(168,85,247,0.5)');
+        grd.addColorStop(1,    'rgba(236,72,153,0)');
+        ctx.beginPath(); ctx.arc(headX, hy, 32, 0, Math.PI*2);
+        ctx.fillStyle = grd; ctx.fill();
+        ctx.beginPath(); ctx.arc(headX, hy, 5.5, 0, Math.PI*2);
+        ctx.fillStyle = '#fff'; ctx.fill();
+        ctx.beginPath(); ctx.arc(headX, hy, 3.5, 0, Math.PI*2);
+        ctx.fillStyle = '#6366f1'; ctx.fill();
+      }
+      if (headX >= W - 4) {
+        const eg = ctx.createRadialGradient(W, MID, 0, W, MID, 48);
+        eg.addColorStop(0,   'rgba(236,72,153,0.8)');
+        eg.addColorStop(0.5, 'rgba(217,70,239,0.35)');
+        eg.addColorStop(1,   'rgba(168,85,247,0)');
+        ctx.beginPath(); ctx.arc(W, MID, 48, 0, Math.PI*2);
+        ctx.fillStyle = eg; ctx.fill();
+      }
+      if (headX < W) {
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(Math.max(0, headX + 1), 0, W, H);
+      }
+      frameCount++;
+      sendProgress = frameCount / totalFrames;
+      const bitsNow = Math.floor(sendProgress * bits.length);
+      while (revealedCount < bitsNow && revealedCount < bits.length) {
+        revealedStr += bits[revealedCount];
+        if ((revealedCount + 1) % 8 === 0) revealedStr += ' ';
+        revealedCount++;
+      }
+      renderBits(revealedStr.trim());
+      if (frameCount >= totalFrames) {
+        sending = false; sendProgress = 1;
+        renderBits(lastBits);
+        wst.textContent = 'ricevuto ✓';
+        pendingReveal = true;
+        startReveal();
+      }
+    } else {
+      drawSine(36, 3,   'rgba(99,102,241,0.9)',  3.2, null);
+      drawSine(20, 5.5, 'rgba(236,72,153,0.6)',  2.2, null);
+      drawSine(14, 1.4, 'rgba(245,158,11,0.4)',  1.8, null);
+    }
+  }
+
+  ph += 0.05;
+  requestAnimationFrame(loop);
+}
+
+function startReveal() {
+  let ci = 0;
+  function step() {
+    if (ci < currentText.length) {
+      recvEl.textContent = currentText.slice(0, ci + 1);
+      ci++; setTimeout(step, 90);
+    } else {
+      setTimeout(() => { wst.textContent = ''; pendingReveal = false; }, 600);
+    }
+  }
+  setTimeout(step, 250);
+}
+
+function send() {
+  if (sending || pendingReveal) return;
+  const inp  = document.getElementById('msg');
+  const text = inp.value.trim();
+  if (!text) return;
+  inp.value = '';
+  currentText = text;
+  bits = toBits(text);
+  lastBits = bits.match(/.{1,8}/g).join(' ');
+  totalFrames = Math.max(180, bits.length * 5);
+  frameCount = 0; sendProgress = 0; revealedCount = 0; revealedStr = '';
+  recvEl.textContent = ''; bitsEl.innerHTML = '';
+  wst.textContent = 'trasmissione in corso...';
+  waveOn = true; sending = true;
+}
+
+document.getElementById('msg').addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
+loop();
+</script>
+</body>
+</html>
